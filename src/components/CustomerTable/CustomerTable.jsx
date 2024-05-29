@@ -5,6 +5,7 @@ import Button from "../Button/Button";
 import Input from "../Input/Input";
 import { ReactComponent as ChevronUp } from "../../assets/icons/ChevronUp.svg";
 import { ReactComponent as ChevronDown } from "../../assets/icons/ChevronDown.svg";
+import { ReactComponent as SearchSVG } from "../../assets/icons/SearchIcon.svg";
 import _ from 'lodash';
 import Pagination from "../Pagination/Pagination";
 
@@ -38,20 +39,12 @@ const CustomerTable = () => {
         const tempRecords = customerData?.filter(customer => customer?.name?.toLowerCase()?.includes(searchText?.toLowerCase()));
         const filteredRecords = [];
         tempRecords.forEach((tempRecord, index) => {
-            if(index+1 > (currentPage-1)*10 && index < currentPage*10) {
+            if(index+1 > (currentPage-1)*recordsPerPage && index < currentPage*recordsPerPage) {
                 filteredRecords.push(tempRecord);
             }
         })
         setFilteredTableData([...filteredRecords]);
-    }, [currentPage])
-
-    useEffect(() => {
-
-    })
-
-    const searchCustomer = () => {
-        setFilteredTableData(customerData.filter(customer => customer?.name?.toLowerCase()?.includes(searchText?.toLowerCase())));
-    }
+    }, [currentPage, searchText, recordsPerPage])
 
     const handleOnSorting = (headerIndex) => {
         const sortableArray = [...isSorting];
@@ -75,16 +68,14 @@ const CustomerTable = () => {
         <div style={{height:'100vh'}}>
             <div style={{display: 'flex', flexDirection:'row', justifyContent: 'space-between', alignItems: 'center', height:'10vh'}}>
                 <h2>Customer Table</h2>
-                <div style={{display:'flex',flexDirection:'row',alignItems:'center', gap:'3px'}}>
                     <Input
                         type='input'
                         id='customerInput'
                         value={searchText}
                         placeholder='Search Customer'
                         onChange={(event) => setSearchText(event.target.value)}
+                        leftBlock={<SearchSVG/>}
                     />
-                    <Button onClick={searchCustomer}>Search</Button>
-                </div>
             </div>
             <div style={{height:'80vh', overflowY:'scroll'}}>
                 <table className={styles.table}>
@@ -109,7 +100,7 @@ const CustomerTable = () => {
                     </tbody>
                 </table>
             </div>
-            {customerData?.length > 0 && <div style={{height:'10vh',display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+            {customerData?.filter(customer => customer?.name?.toLowerCase()?.includes(searchText?.toLowerCase()))?.length > 0 && <div style={{height:'10vh',display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
                 <Pagination totalRecords={customerData?.filter(customer => customer?.name?.toLowerCase()?.includes(searchText?.toLowerCase()))?.length} currentPage={currentPage} recordsPerPage={recordsPerPage} setCurrentPage={setCurrentPage} setRecordsPerPage={setRecordsPerPage}/>
             </div> }
         </div>
