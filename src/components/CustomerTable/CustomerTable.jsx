@@ -8,6 +8,9 @@ import { ReactComponent as ChevronDown } from "../../assets/icons/ChevronDown.sv
 import { ReactComponent as SearchSVG } from "../../assets/icons/SearchIcon.svg";
 import _ from 'lodash';
 import Pagination from "../Pagination/Pagination";
+import {getCustomerList} from "../../services/customerService";
+import {fetchCustomerDataAction} from "../../store/CustomerData/customerData.reducer";
+import {useCustomerDataActions} from "../../store/CustomerData/useCustomerDataActions";
 
 const columns = [
     'name',
@@ -29,10 +32,13 @@ const CustomerTable = () => {
     const [filteredTableData, setFilteredTableData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [recordsPerPage, setRecordsPerPage] = useState(10);
+    const {fetchCustomerDataAction} = useCustomerDataActions();
 
     useEffect(() => {
         setIsSorting([...headers.map(header => false)]);
         setFilteredTableData([...customerData]);
+
+        fetchCustomerDataAction();
     }, [])
 
     useEffect(() => {
