@@ -1,16 +1,15 @@
 import React, {useEffect, useState} from "react";
 import { customerData } from "../../utils/customerData";
 import styles from "./CustomerTable.module.scss";
-import Button from "../Button/Button";
 import Input from "../Input/Input";
 import { ReactComponent as ChevronUp } from "../../assets/icons/ChevronUp.svg";
 import { ReactComponent as ChevronDown } from "../../assets/icons/ChevronDown.svg";
 import { ReactComponent as SearchSVG } from "../../assets/icons/SearchIcon.svg";
 import _ from 'lodash';
 import Pagination from "../Pagination/Pagination";
-import {getCustomerList} from "../../services/customerService";
-import {fetchCustomerDataAction} from "../../store/CustomerData/customerData.reducer";
+// import {fetchCustomerDataAction} from "../../store/CustomerData/customerData.reducer";
 import {useCustomerDataActions} from "../../store/CustomerData/useCustomerDataActions";
+// import {useCustomerDataSelectors} from "../../store/CustomerData/useCustomerDataSelectors";
 
 const columns = [
     'name',
@@ -32,13 +31,14 @@ const CustomerTable = () => {
     const [filteredTableData, setFilteredTableData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [recordsPerPage, setRecordsPerPage] = useState(10);
-    const {fetchCustomerDataAction} = useCustomerDataActions();
+    // const {fetchCustomerDataAction} = useCustomerDataActions();
+    // const customerData = useCustomerDataSelectors();
 
     useEffect(() => {
         setIsSorting([...headers.map(header => false)]);
         setFilteredTableData([...customerData]);
 
-        fetchCustomerDataAction();
+        // fetchCustomerDataAction();
     }, [])
 
     useEffect(() => {
@@ -51,6 +51,11 @@ const CustomerTable = () => {
         })
         setFilteredTableData([...filteredRecords]);
     }, [currentPage, searchText, recordsPerPage])
+
+    // useEffect(() => {
+    //     console.log('customerData2 =>', customerData2.customerData);
+    //     setFilteredTableData(customerData2.customerData);
+    // }, [customerData2])
 
     const handleOnSorting = (headerIndex) => {
         const sortableArray = [...isSorting];

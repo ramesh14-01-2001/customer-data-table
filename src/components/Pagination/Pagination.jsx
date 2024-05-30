@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Button from '../PaginationButton/PaginationButton';
 import { ReactComponent as ChevronLeft } from '../../assets/icons/ChevronLeft.svg';
 import { ReactComponent as ChevronRight } from '../../assets/icons/ChevronRight.svg';
-import { ReactComponent as ChevronLeftDisabled } from '../../assets/icons/ChevronLeft.svg';
-import { ReactComponent as ChevronRightDisabled } from '../../assets/icons/ChevronRight.svg';
+import { ReactComponent as ChevronLeftDisabled } from '../../assets/icons/ChevronLeftDisabled.svg';
+import { ReactComponent as ChevronRightDisabled } from '../../assets/icons/ChevronRightDisabled.svg';
 import DropDown from '../DropDown/DropDown';
 import styles from './Pagination.module.scss';
 
