@@ -4,9 +4,7 @@ import CustomerDashboard from "./components/CustomerDashboard/CustomerDashboard"
 const App = () => {
 
   return (
-    <div>
-       <CustomerDashboard />
-    </div>
+    <CustomerDashboard />
   );
 }
 

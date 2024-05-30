@@ -1,10 +1,13 @@
 import React from "react";
-import styles from './Button.module.scss';
+import styles from "./Button.module.scss";
 
-const Button = ({children, onClick}) => {
+const Button = ({ label, Icon, position, key, onClick, disabled, active }) => {
+
     return (
-        <button onClick={onClick} className={styles.buttonWrapper}>
-            {children}
+        <button className={active ? styles.activeButtonWrapper : styles.buttonWrapper} key={key} onClick={onClick} disabled={disabled}>
+            {position === 'left' && <Icon />}
+            {label}
+            {position === 'right' && <Icon />}
         </button>
     );
 }

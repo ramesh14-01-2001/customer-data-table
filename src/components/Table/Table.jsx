@@ -1,48 +1,27 @@
-import React, {useEffect, useState} from "react";
-import { customerData } from "../../utils/customerData";
-import styles from "./CustomerTable.module.scss";
+import React, { useEffect, useState } from "react";
 import Input from "../Input/Input";
 import { ReactComponent as ChevronUp } from "../../assets/icons/ChevronUp.svg";
 import { ReactComponent as ChevronDown } from "../../assets/icons/ChevronDown.svg";
 import { ReactComponent as SearchSVG } from "../../assets/icons/SearchIcon.svg";
-import _ from 'lodash';
+import _ from "lodash";
 import Pagination from "../Pagination/Pagination";
-// import {fetchCustomerDataAction} from "../../store/CustomerData/customerData.reducer";
-import {useCustomerDataActions} from "../../store/CustomerData/useCustomerDataActions";
-// import {useCustomerDataSelectors} from "../../store/CustomerData/useCustomerDataSelectors";
+import { columns, headers } from "../../utils/customerTableUtils";
+import { CUSTOMER_INPUT, INPUT, SEARCH_CUSTOMER } from "../../constants/constants";
+import styles from './Table.module.scss';
 
-const columns = [
-    'name',
-    'date',
-    'status',
-    'amount'
-];
-
-const headers = [
-    'Name',
-    'Date',
-    'Status',
-    'Amount'
-];
-
-const CustomerTable = () => {
-    const [searchText, setSearchText] = useState('');
+const Table = ({searchText, setSearchText, tableData}) => {
     const [isSorting, setIsSorting] = useState([]);
     const [filteredTableData, setFilteredTableData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [recordsPerPage, setRecordsPerPage] = useState(10);
-    // const {fetchCustomerDataAction} = useCustomerDataActions();
-    // const customerData = useCustomerDataSelectors();
 
     useEffect(() => {
         setIsSorting([...headers.map(header => false)]);
-        setFilteredTableData([...customerData]);
-
-        // fetchCustomerDataAction();
-    }, [])
+        setFilteredTableData([...tableData]);
+    }, [tableData])
 
     useEffect(() => {
-        const tempRecords = customerData?.filter(customer => customer?.name?.toLowerCase()?.includes(searchText?.toLowerCase()));
+        const tempRecords = tableData?.filter(customer => customer?.name?.toLowerCase()?.includes(searchText?.toLowerCase()));
         const filteredRecords = [];
         tempRecords.forEach((tempRecord, index) => {
             if(index+1 > (currentPage-1)*recordsPerPage && index < currentPage*recordsPerPage) {
@@ -50,12 +29,7 @@ const CustomerTable = () => {
             }
         })
         setFilteredTableData([...filteredRecords]);
-    }, [currentPage, searchText, recordsPerPage])
-
-    // useEffect(() => {
-    //     console.log('customerData2 =>', customerData2.customerData);
-    //     setFilteredTableData(customerData2.customerData);
-    // }, [customerData2])
+    }, [currentPage, searchText, recordsPerPage, tableData])
 
     const handleOnSorting = (headerIndex) => {
         const sortableArray = [...isSorting];
@@ -75,26 +49,33 @@ const CustomerTable = () => {
         }
     }
 
+    const totalRecords = tableData?.filter(customer => customer?.name?.toLowerCase()?.includes(searchText?.toLowerCase()))?.length;
+
+    const handleOnSetSearchText = (event) => {
+        setSearchText(event.target.value);
+        setCurrentPage(1);
+    }
+
     return (
-        <div style={{height:'100vh'}}>
-            <div style={{display: 'flex', flexDirection:'row', justifyContent: 'space-between', alignItems: 'center', height:'10vh'}}>
+        <div className={styles.tableWrapper}>
+            <div className={styles.tableHeader}>
                 <h2>Customer Table</h2>
                     <Input
-                        type='input'
-                        id='customerInput'
+                        type={INPUT}
+                        id={CUSTOMER_INPUT}
                         value={searchText}
-                        placeholder='Search Customer'
-                        onChange={(event) => setSearchText(event.target.value)}
+                        placeholder={SEARCH_CUSTOMER}
+                        onChange={handleOnSetSearchText}
                         leftBlock={<SearchSVG/>}
                     />
             </div>
-            <div style={{height:'80vh', overflowY:'scroll'}}>
+            <div className={styles.tableContainer}>
                 <table className={styles.table}>
                     <thead>
                     {headers.map((header, headerIndex) => (
                         <th key={headerIndex} className={styles.header}>
                             {header}
-                            <span style={{marginLeft:'5px', cursor: 'pointer'}}>{isSorting[headerIndex] ? <ChevronDown onClick={() => handleOnSorting(headerIndex)}/> : <ChevronUp onClick={() => handleOnSorting(headerIndex)}/>}</span>
+                            <span className={styles.tableHeaderItem}>{isSorting[headerIndex] ? <ChevronDown onClick={() => handleOnSorting(headerIndex)}/> : <ChevronUp onClick={() => handleOnSorting(headerIndex)}/>}</span>
                         </th>
                     ))}
                     </thead>
@@ -111,11 +92,11 @@ const CustomerTable = () => {
                     </tbody>
                 </table>
             </div>
-            {customerData?.filter(customer => customer?.name?.toLowerCase()?.includes(searchText?.toLowerCase()))?.length > 0 && <div style={{height:'10vh',display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                <Pagination totalRecords={customerData?.filter(customer => customer?.name?.toLowerCase()?.includes(searchText?.toLowerCase()))?.length} currentPage={currentPage} recordsPerPage={recordsPerPage} setCurrentPage={setCurrentPage} setRecordsPerPage={setRecordsPerPage}/>
+            {totalRecords > 0 && <div className={styles.paginationContainer}>
+                <Pagination totalRecords={totalRecords} currentPage={currentPage} recordsPerPage={recordsPerPage} setCurrentPage={setCurrentPage} setRecordsPerPage={setRecordsPerPage}/>
             </div> }
         </div>
     );
 }
 
-export default CustomerTable;
+export default Table;

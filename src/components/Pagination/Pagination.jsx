@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Button from '../PaginationButton/PaginationButton';
+import Button from '../Button/Button';
 import { ReactComponent as ChevronLeft } from '../../assets/icons/ChevronLeft.svg';
 import { ReactComponent as ChevronRight } from '../../assets/icons/ChevronRight.svg';
 import { ReactComponent as ChevronLeftDisabled } from '../../assets/icons/ChevronLeftDisabled.svg';
