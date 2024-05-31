@@ -14,14 +14,26 @@ const Table = ({searchText, setSearchText, tableData}) => {
     const [filteredTableData, setFilteredTableData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [recordsPerPage, setRecordsPerPage] = useState(10);
+    const [actualTableData, setActualTableData] = useState([]);
 
     useEffect(() => {
         setIsSorting([...headers.map(header => false)]);
-        setFilteredTableData([...tableData]);
+        setActualTableData([...tableData]);
     }, [tableData])
 
     useEffect(() => {
-        const tempRecords = tableData?.filter(customer => customer?.name?.toLowerCase()?.includes(searchText?.toLowerCase()));
+        setFilteredTableData([...actualTableData]);
+    }, [actualTableData])
+
+    useEffect(() => {
+        const tempRecords = actualTableData.filter(customer => {
+            for (const key in customer) {
+                if (customer[key] && customer[key].toString().toLowerCase().includes(searchText.toLowerCase())) {
+                    return true;
+                }
+            }
+            return false;
+        });
         const filteredRecords = [];
         tempRecords.forEach((tempRecord, index) => {
             if(index+1 > (currentPage-1)*recordsPerPage && index < currentPage*recordsPerPage) {
@@ -29,24 +41,25 @@ const Table = ({searchText, setSearchText, tableData}) => {
             }
         })
         setFilteredTableData([...filteredRecords]);
-    }, [currentPage, searchText, recordsPerPage, tableData])
+    }, [currentPage, searchText, recordsPerPage, actualTableData])
 
     const handleOnSorting = (headerIndex) => {
+        setCurrentPage(1);
         const sortableArray = [...isSorting];
-        sortableArray.forEach((sort,index) => {
-            if(index === headerIndex){
+        sortableArray.forEach((sort, index) => {
+            if (index === headerIndex) {
                 sortableArray[index] = !sortableArray[headerIndex];
             } else {
                 sortableArray[index] = false;
             }
-        })
+        });
         setIsSorting([...sortableArray]);
-
-        if(isSorting[headerIndex]) {
-            setFilteredTableData([..._.orderBy([...filteredTableData], columns[headerIndex], 'desc')]);
-        } else {
-            setFilteredTableData([..._.orderBy([...filteredTableData], columns[headerIndex], 'asc')]);
-        }
+        const order = isSorting[headerIndex] ? 'desc' : 'asc';
+        const primaryColumn = columns[headerIndex];
+        const secondaryColumn = 'name';
+        setActualTableData([
+            ..._.orderBy([...actualTableData], [primaryColumn, secondaryColumn], [order, 'asc'])
+        ]);
     }
 
     const totalRecords = tableData?.filter(customer => customer?.name?.toLowerCase()?.includes(searchText?.toLowerCase()))?.length;
@@ -72,12 +85,14 @@ const Table = ({searchText, setSearchText, tableData}) => {
             <div className={styles.tableContainer}>
                 <table className={styles.table}>
                     <thead>
-                    {headers.map((header, headerIndex) => (
-                        <th key={headerIndex} className={styles.header}>
-                            {header}
-                            <span className={styles.tableHeaderItem}>{isSorting[headerIndex] ? <ChevronDown onClick={() => handleOnSorting(headerIndex)}/> : <ChevronUp onClick={() => handleOnSorting(headerIndex)}/>}</span>
-                        </th>
-                    ))}
+                    <tr>
+                        {headers.map((header, headerIndex) => (
+                            <th key={headerIndex} className={styles.header}>
+                                {header}
+                                <span className={styles.tableHeaderItem}>{isSorting[headerIndex] ? <ChevronDown onClick={() => handleOnSorting(headerIndex)}/> : <ChevronUp onClick={() => handleOnSorting(headerIndex)}/>}</span>
+                            </th>
+                        ))}
+                    </tr>
                     </thead>
                     <tbody>
                     {filteredTableData?.map((row, rowIndex) => (
